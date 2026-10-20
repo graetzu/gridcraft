@@ -1,31 +1,37 @@
 # Formula language
 
 View → Interface language is the existing, persisted language preference. Choose **Español**
-for Spanish formula entry and display. On first run the preference follows the system language.
-English and the other interface languages currently use the English formula table and separators.
+for Spanish formula entry and display, or **Deutsch** for German. On first run the preference
+follows the system language. English and the other interface languages currently use the
+English formula table and separators.
 
-| Spanish | Canonical English |
-| --- | --- |
-| `SUMA` | `SUM` |
-| `PROMEDIO` | `AVERAGE` |
-| `SI` | `IF` |
-| `CONTAR` | `COUNT` |
-| `SUMAR.SI` | `SUMIF` |
-| `CONTAR.SI` | `COUNTIF` |
-| `BUSCARV` | `VLOOKUP` |
-| `HOY` | `TODAY` |
-| `VERDADERO`, `FALSO` | `TRUE`, `FALSE` (literals or function calls) |
+| Spanish | German | Canonical English |
+| --- | --- | --- |
+| `SUMA` | `SUMME` | `SUM` |
+| `PROMEDIO` | `MITTELWERT` | `AVERAGE` |
+| `SI` | `WENN` | `IF` |
+| `CONTAR` | `ANZAHL` | `COUNT` |
+| `SUMAR.SI` | `SUMMEWENN` | `SUMIF` |
+| `CONTAR.SI` | `ZÄHLENWENN` | `COUNTIF` |
+| `BUSCARV` | `SVERWEIS` | `VLOOKUP` |
+| `HOY` | `HEUTE` | `TODAY` |
+| `VERDADERO`, `FALSO` | `WAHR`, `FALSCH` | `TRUE`, `FALSE` (literals or function calls) |
 
-Names are case-insensitive. Spanish formulas use decimal commas (`1,5`), semicolon arguments
-and reference unions, and backslashes between array columns (`{1\2;3\4}`). For example,
-`=SI(VERDADERO;SUMA(1,5;2,25);0)` evaluates to 3.75. English mode retains comma arguments,
-decimal points and comma array columns; it does not silently translate Spanish aliases.
+German has about 410 translated function names in total (`crates/formula/src/input/de.rs`),
+sourced from Microsoft's de-de Excel function pages; functions without a confirmed German name
+keep their English spelling.
+
+Names are case-insensitive. Spanish and German formulas use decimal commas (`1,5`) and
+semicolon arguments and reference unions. Spanish uses backslashes between array columns
+(`{1\2;3\4}`); German uses dots (`{1.2;3.4}`). For example, `=SI(VERDADERO;SUMA(1,5;2,25);0)`
+and `=WENN(WAHR;SUMME(1,5;2,25);0)` both evaluate to 3.75. English mode retains comma
+arguments, decimal points and comma array columns; it does not silently translate aliases.
 
 The cell editor, formula bar, Show Formulas, autocomplete, the Formula ribbon, Insert Function, and argument hints
-use the selected formula language. Common Spanish function help is translated; functions
-without a Spanish entry retain their English names/help. General interface labels and errors
-fall back to English where Spanish translations are not provided. An edit captures its language
-when it starts so switching the preference cannot reinterpret unfinished input.
+use the selected formula language. Common Spanish and German function help is translated;
+functions without a translated entry retain their English names/help. General interface labels
+and errors fall back to English where a translation is not provided. An edit captures its
+language when it starts so switching the preference cannot reinterpret unfinished input.
 
 Workbook/sheet names, table names, LET bindings and LAMBDA parameters take precedence over
 aliases. Text, sheet names and table column names are unchanged. When a localized spelling

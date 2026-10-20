@@ -86,8 +86,8 @@ fn hide_udf_prefix(text: &str, locale: FormulaLocale) -> String {
     out
 }
 
-// Descriptions/signatures for the supported Spanish function table; untranslated functions
-// retain their English help. Parameter punctuation follows the same locale as entry.
+// Descriptions/signatures for the supported Spanish and German function tables; untranslated
+// functions retain their English help. Parameter punctuation follows the same locale as entry.
 const SPANISH_HELP: &[(&str, &str, &str)] = &[
     ("SUM", "SUMA(número1; [número2]; ...)", "Suma los números."),
     ("AVERAGE", "PROMEDIO(número1; [número2]; ...)", "Devuelve el promedio de los números."),
@@ -101,11 +101,30 @@ const SPANISH_HELP: &[(&str, &str, &str)] = &[
     ("FALSE", "FALSO()", "Devuelve el valor lógico FALSO."),
 ];
 
+const GERMAN_HELP: &[(&str, &str, &str)] = &[
+    ("SUM", "SUMME(Zahl1; [Zahl2]; ...)", "Addiert die Zahlen."),
+    ("AVERAGE", "MITTELWERT(Zahl1; [Zahl2]; ...)", "Gibt den Mittelwert der Zahlen zurück."),
+    ("IF", "WENN(Wahrheitstest; [Wert_wenn_wahr]; [Wert_wenn_falsch])", "Gibt einen Wert abhängig von einer Bedingung zurück."),
+    ("COUNT", "ANZAHL(Wert1; [Wert2]; ...)", "Zählt die Zellen, die Zahlen enthalten."),
+    ("SUMIF", "SUMMEWENN(Bereich; Kriterien; [Summe_Bereich])", "Addiert die Zellen, die ein Kriterium erfüllen."),
+    ("COUNTIF", "ZÄHLENWENN(Bereich; Kriterien)", "Zählt die Zellen, die ein Kriterium erfüllen."),
+    ("VLOOKUP", "SVERWEIS(Suchkriterium; Matrix; Spaltenindex; [Bereich_Verweis])", "Sucht einen Wert in der ersten Spalte einer Tabelle."),
+    ("TODAY", "HEUTE()", "Gibt das aktuelle Datum zurück."),
+    ("TRUE", "WAHR()", "Gibt den Wahrheitswert WAHR zurück."),
+    ("FALSE", "FALSCH()", "Gibt den Wahrheitswert FALSCH zurück."),
+];
+
+fn help_table(locale: FormulaLocale) -> &'static [(&'static str, &'static str, &'static str)] {
+    match locale {
+        FormulaLocale::Es => SPANISH_HELP,
+        FormulaLocale::De => GERMAN_HELP,
+        FormulaLocale::En => &[],
+    }
+}
+
 pub(crate) fn signature(name: &str, locale: FormulaLocale) -> Option<String> {
     let canonical = locale.canonical_name(name);
-    if locale == FormulaLocale::Es
-        && let Some((_, signature, _)) = SPANISH_HELP.iter().find(|(name, ..)| *name == canonical)
-    {
+    if let Some((_, signature, _)) = help_table(locale).iter().find(|(name, ..)| *name == canonical) {
         return Some((*signature).into());
     }
     crate::formula_bar::function_signature(canonical).map(|s| s.replace(',', &locale.list_separator().to_string()))
@@ -113,9 +132,7 @@ pub(crate) fn signature(name: &str, locale: FormulaLocale) -> Option<String> {
 
 pub(crate) fn description(name: &str, locale: FormulaLocale) -> Option<String> {
     let canonical = locale.canonical_name(name);
-    if locale == FormulaLocale::Es
-        && let Some((_, _, description)) = SPANISH_HELP.iter().find(|(name, ..)| *name == canonical)
-    {
+    if let Some((_, _, description)) = help_table(locale).iter().find(|(name, ..)| *name == canonical) {
         return Some((*description).into());
     }
     crate::formula_bar::function_description(canonical)
